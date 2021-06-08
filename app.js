@@ -1,12 +1,18 @@
 const express = require('express');
 const morgan = require('morgan');
 const bodyParser = require('body-parser');
+const mongoose = require('mongoose');
 const cors = require('cors');
 
 const app = express();
 const ProductRoutes = require('./api/routes/products');
 const OrderRoutes = require('./api/routes/orders');
 
+mongoose.connect('mongodb+srv://Nodeapi:'+ process.env.MONGO_ATLAS_PWD +'@cluster0.bqtzq.mongodb.net/myFirstDatabase?retryWrites=true&w=majority',{
+    useNewUrlParser: true,
+    useCreateIndex: true,
+    useUnifiedTopology: true
+});
 
 app.use(morgan('dev'));
 app.use(cors());
