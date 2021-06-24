@@ -15,6 +15,7 @@ mongoose.connect('mongodb+srv://Nodeapi:'+ process.env.MONGO_ATLAS_PWD +'@cluste
 });
 
 app.use(morgan('dev'));
+app.use('/uploads',express.static('uploads'));
 app.use(cors());
 app.use(express.urlencoded({ extended : false }));
 
