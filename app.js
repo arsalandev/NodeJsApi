@@ -7,6 +7,7 @@ const cors = require('cors');
 const app = express();
 const ProductRoutes = require('./api/routes/products');
 const OrderRoutes = require('./api/routes/orders');
+const UserRoutes = require('./api/routes/users');
 
 mongoose.connect('mongodb+srv://Nodeapi:'+ process.env.MONGO_ATLAS_PWD +'@cluster0.bqtzq.mongodb.net/myFirstDatabase?retryWrites=true&w=majority',{
     useNewUrlParser: true,
@@ -33,6 +34,7 @@ app.use((req, res, next) => {
 
 app.use('/products',cors(),ProductRoutes);
 app.use('/orders',OrderRoutes);
+app.use('/users', UserRoutes);
 
 app.use((req, res, next) => {
     const error = new Error('Not Found'); 
