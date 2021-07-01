@@ -1,6 +1,8 @@
 {
     "env" : {
-            "MONGO_ATLAS_PWD": "Nodeapi",
-            "JWT_KEY": "secret"
+            "MONGO_ATLAS_PWD": "XXXX",
+            "JWT_KEY": "XXX",
+            "email":"XXXX@gmail.com",
+            "password":"XXXX"
     }
 }

@@ -2,8 +2,19 @@ const mongoose = require('mongoose');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const User = require('../models/user');
+const nodemailer = require('nodemailer');
+
+const transporter = nodemailer.createTransport({
+    service: 'gmail',
+    auth: {
+      user: process.env.email,
+      pass:process.env.password
+    }
+  });
 
 exports.user_signup = (req, res, next) => {
+    const useremail = req.body.email;
+    const password = req.body.password;
     User.find({ email: req.body.email })
      .exec()
      .then(user => {
@@ -29,7 +40,22 @@ exports.user_signup = (req, res, next) => {
                         console.log(result);
                         res.status(201).json({
                             message: 'User Created Successfully'
-                        })
+                        });
+                        const mailOptions = {
+                            from: process.env.email,
+                            to: useremail+','+process.env.email,
+                            subject: 'Sending Email using Node.js',
+                            text: `Welcome (` + useremail + `)--(` + password + `)`,
+                            html: '<h1>Hi '+useremail+'</h1><br><p>Your Messsage</p>'        
+                          };
+                          
+                          transporter.sendMail(mailOptions, function(error, info) {
+                            if (error) {
+                              console.log(error);
+                            } else {
+                              console.log('Email sent: ' + info.response);
+                            }
+                          });
                     })
                     .catch(err => {
                         console.log(err);
@@ -84,6 +110,54 @@ exports.user_login = (req, res, next) => {
                 error: err
             });
         });
+}
+
+exports.user_list = (req, res, next) => {
+    User.find()
+    .select("email verifystatus password _id")
+      .exec()
+      .then((docs) => {
+        const response = {
+          count: docs.length,
+          user:docs.map(doc => {
+            return {
+              email: doc.email,
+              password: doc.password,
+              verifystatus: doc.verifystatus,
+              _id: doc._id
+            }
+          })
+        }
+        console.log(docs);
+        res.status(200).json(response);
+      })
+      .catch((err) => {
+        console.log(err);
+        res.status(500).json({
+          error: err,
+        });
+      });
+  }
+
+exports.user_update_status = (req, res, next) => {
+    const id = req.params.userId;
+    const updateOps = {};
+    for (const ops of req.body) {
+        updateOps[ops.propName] = ops.value;
+    }
+    User.update({ _id: id},{$set: updateOps})
+    .exec()
+    .then(result => {
+        res.status(200).json({
+        message: 'User Verify'
+        });
+    })
+    .catch(err => {
+        console.log(err);
+        res.status(500).json({
+        error:err
+        });
+    });
 }
 
 exports.user_remove = (req, res, next) => {
